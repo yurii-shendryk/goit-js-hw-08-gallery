@@ -37,25 +37,36 @@ const OnImageClick = (event) => {
     console.log("Кликнули не по картинке");
     return;
   }
+
   updateImgSource(event.target);
   openModal();
 };
 
 const updateImgSource = (currentImg) => {
   const imgSource = currentImg.dataset.source;
+  const imgDescription = currentImg.alt;
   refs.lightboxImg.src = `${imgSource}`;
+  refs.lightboxImg.alt = `${imgDescription}`;
 };
 
 const openModal = () => {
   refs.lightbox.classList.add("is-open");
 };
 
-const onCloseBtnClick = (event) => {
+const onCloseBtnClick = () => {
   closeModal();
+  resetImgSource(refs.lightboxImg);
 };
 
 const closeModal = () => {
   refs.lightbox.classList.remove("is-open");
+};
+
+const resetImgSource = (currentImg) => {
+  if (currentImg) {
+    refs.lightboxImg.src = "";
+    refs.lightboxImg.alt = "";
+  }
 };
 
 refs.gallery.addEventListener("click", OnImageClick);

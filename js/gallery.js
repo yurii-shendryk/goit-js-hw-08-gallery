@@ -5,6 +5,7 @@ const refs = {
   lightbox: document.querySelector(".js-lightbox"),
   lightboxImg: document.querySelector(".lightbox__image"),
   btnClose: document.querySelector('button[data-action="close-lightbox"]'),
+  backdrop: document.querySelector(".lightbox__overlay"),
 };
 
 const createGalleryItem = (galleryItem) => {
@@ -50,16 +51,18 @@ const updateImgSource = (currentImg) => {
 };
 
 const openModal = () => {
+  window.addEventListener("keydown", closeModalByKey);
   refs.lightbox.classList.add("is-open");
 };
 
 const onCloseBtnClick = () => {
   closeModal();
-  resetImgSource(refs.lightboxImg);
 };
 
 const closeModal = () => {
   refs.lightbox.classList.remove("is-open");
+  resetImgSource(refs.lightboxImg);
+  window.removeEventListener("keydown", closeModalByKey);
 };
 
 const resetImgSource = (currentImg) => {
@@ -69,5 +72,18 @@ const resetImgSource = (currentImg) => {
   }
 };
 
+const onBackdropClick = () => {
+  if (event.target === event.currentTarget) {
+    closeModal();
+  }
+};
+
+const closeModalByKey = () => {
+  if (event.code === "Escape") {
+    closeModal();
+  }
+};
+
 refs.gallery.addEventListener("click", OnImageClick);
 refs.btnClose.addEventListener("click", onCloseBtnClick);
+refs.backdrop.addEventListener("click", onBackdropClick);

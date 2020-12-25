@@ -8,6 +8,7 @@ const refs = {
   backdrop: document.querySelector(".lightbox__overlay"),
 };
 
+let ActiveIndex;
 const createGalleryItem = (galleryItem) => {
   const galleryItemRef = document.createElement("li");
   galleryItemRef.classList.add("gallery__item");
@@ -21,9 +22,13 @@ const createGalleryItem = (galleryItem) => {
   previewImgRef.src = galleryItem.preview;
   previewImgRef.setAttribute("data-source", `${originalImgRef.href}`);
   previewImgRef.alt = galleryItem.description;
-
+  previewImgRef.setAttribute(
+    "data-index",
+    `${galleryItems.indexOf(galleryItem)}`
+  );
   originalImgRef.append(previewImgRef);
   galleryItemRef.appendChild(originalImgRef);
+
   return galleryItemRef;
 };
 
@@ -38,12 +43,13 @@ const OnImageClick = (event) => {
     console.log("Кликнули не по картинке");
     return;
   }
-
-  updateImgSource(event.target);
+  const image = event.target;
+  ActiveIndex = Number(event.target.dataset.index);
+  updateImgAttributes(image);
   openModal();
 };
 
-const updateImgSource = (currentImg) => {
+const updateImgAttributes = (currentImg) => {
   const imgSource = currentImg.dataset.source;
   const imgDescription = currentImg.alt;
   refs.lightboxImg.src = `${imgSource}`;
@@ -53,6 +59,8 @@ const updateImgSource = (currentImg) => {
 const openModal = () => {
   window.addEventListener("keydown", closeModalByKey);
   refs.lightbox.classList.add("is-open");
+  window.addEventListener("keydown", goToNextImage);
+  window.addEventListener("keydown", goToPreviousImage);
 };
 
 const onCloseBtnClick = () => {
@@ -63,6 +71,8 @@ const closeModal = () => {
   refs.lightbox.classList.remove("is-open");
   resetImgSource(refs.lightboxImg);
   window.removeEventListener("keydown", closeModalByKey);
+  window.removeEventListener("keydown", goToNextImage);
+  window.removeEventListener("keydown", goToPreviousImage);
 };
 
 const resetImgSource = (currentImg) => {
@@ -81,6 +91,24 @@ const onBackdropClick = () => {
 const closeModalByKey = () => {
   if (event.code === "Escape") {
     closeModal();
+  }
+};
+
+const goToNextImage = (key) => {
+  if (key.code === "ArrowRight") {
+    if (ActiveIndex === galleryItems.length - 1) {
+      return;
+    }
+    refs.lightboxImg.src = galleryItems[(ActiveIndex += 1)].original;
+  }
+};
+
+const goToPreviousImage = (key) => {
+  if (key.code === "ArrowLeft") {
+    if (ActiveIndex === 0) {
+      return;
+    }
+    refs.lightboxImg.src = galleryItems[(ActiveIndex -= 1)].original;
   }
 };
 
